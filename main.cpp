@@ -3,46 +3,6 @@
 
 using namespace std;
 
-struct Book {
-    struct Publication_date pub;
-    struct Author auth;
-    string Title;
-    float cost;
-    int Type;
-    void storeToStruct(string data, int type){
-        switch (type){
-            case 0:
-            convertPubDate(data);
-            break;
-            case 1:
-            convertAuthor(data);
-            break;
-            case 2:
-            convertTitle(data);
-            break;
-            case 3:
-            convertCost(data);
-            break;
-            case 4:
-            convertType(data);
-            break;
-        }
-    }
-    bool isFull(){
-        if (pub.isFull() && auth.isFull() 
-            && (Title.size() > 0) && cost >= 0 && Type >= 0){
-            return true;
-        } else return false;
-    }
-    void clear(){
-        Title = "";
-        cost = 0;
-        Type = 0;
-        pub.clear();
-        auth.clear();
-    }
-};
-
 struct Author {
     string First_name;
     string Middle_name;
@@ -54,6 +14,7 @@ struct Author {
         else 
             return false;
     }
+    //reset the struct values
     void clear(){
         First_name = "";
         Middle_name = "";
@@ -71,21 +32,92 @@ struct Publication_date {
         else 
             return false;
     }
+    //reset the struct values
     void clear(){
         month = 0;
         day = 0;
         year = 0;
     }
+    void convertPubDate(string data){
+        string temp;
+        char c;
+        int count = 0;
+        for (int i = 0; i < data.size(); i++){
+            c = data.at(i);
+            if (c == ' '){
+                switch (count){
+                    case 0:
+                    month = stringToInt(temp);
+                    break;
+                    case 1:
+                    
+                    break;
+                    case 2:
+                    
+                    break;
+                    default:
+                    cout << "Error in Publication_date format" << endl;
+                    break;
+                }
+                temp = "";
+                count = 0;
+            } else {
+                temp += c;
+                count++;
+            }
+        }
+    }
 };
 
-void printStruct(struct Book book){
+struct Book {
+    Publication_date pub;
+    Author auth;
+    string Title;
+    float cost;
+    int Type;
+    void storeToStruct(string data, int type){
+        switch (type){
+            case 0:
+            pub.convertPubDate(data);
+            break;
+            case 1:
+            auth.convertAuthor(data);
+            break;
+            case 2:
+            Title = data;
+            break;
+            case 3:
+            convertCost(data);
+            break;
+            case 4:
+            convertType(data);
+            break;
+        }
+    }
+    bool isFull(){
+        if (pub.isFull() && auth.isFull() 
+            && (Title.size() > 0) && cost >= 0 && Type >= 0){
+            return true;
+        } else return false;
+    }
+    //reset the struct values
+    void clear(){
+        Title = "";
+        cost = 0;
+        Type = 0;
+        pub.clear();
+        auth.clear();
+    }
+};
+
+void printStruct(Book book){
     cout << book.Title << endl;
 }
 
 int main(){
     string line, info;
     ifstream infile;
-    struct Book temp;
+    Book temp;
     // opens file to be read
     infile.open("record.dat");
     char c;
