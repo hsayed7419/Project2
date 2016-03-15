@@ -82,6 +82,32 @@ struct Author {
         Middle_name = "";
         Last_name = "";
     }
+    void convertAuthor(string data){
+        string temp;
+        char c;
+        int count = 0;
+        for (int i = 0; i < data.size(); i++){
+            if ((c = data.at(i)) == ' '){
+                switch (count){
+                    case 0:
+                    First_name = temp;
+                    break;
+                    case 1:
+                    Middle_name = temp;
+                    break;
+                    case 2:
+                    Last_name = temp;
+                    break;
+                    default:
+                    cout << "Error in Author name format" << endl;
+                }
+                if (count == 3) break;
+                count ++;
+            } else {
+                temp += c;
+            }
+        }
+    }
 };
 
 struct Publication_date {
@@ -181,19 +207,18 @@ void printStruct(Book book){
 int main(){
     string line, info;
     ifstream infile;
-    Book temp;
-    char c;
-    int count
     // opens file to be read
     infile.open("record.dat");
+    Book temp;
+    char c;
     temp.clear();
-    
+    int count;
     count = 0;
     do {
         infile.get(c);
         if (c == '\n'){
             if (temp.isFull()){
-                //line has been created
+                //struct has been created
                 printStruct(temp);
                 count = 0;
                 line = "";
