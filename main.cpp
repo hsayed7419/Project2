@@ -4,8 +4,8 @@
 using namespace std;
 
 struct Book {
-    struct Publication_date;
-    struct Author;
+    struct Publication_date pub;
+    struct Author auth;
     string Title;
     float cost;
     int Type;
@@ -29,9 +29,17 @@ struct Book {
         }
     }
     bool isFull(){
-        if (Publication_date && Author && Title && cost && Type){
+        if (pub.isFull() && auth.isFull() 
+            && (Title.size() > 0) && cost >= 0 && Type >= 0){
             return true;
         } else return false;
+    }
+    void clear(){
+        Title = "";
+        cost = 0;
+        Type = 0;
+        pub.clear();
+        auth.clear();
     }
 };
 
@@ -39,29 +47,39 @@ struct Author {
     string First_name;
     string Middle_name;
     string Last_name;
+    bool isFull(){
+        if ((First_name.size() > 0) && (Middle_name.size() > 0) 
+            && (Last_name.size() > 0))
+            return true;
+        else 
+            return false;
+    }
+    void clear(){
+        First_name = "";
+        Middle_name = "";
+        Last_name = "";
+    }
 };
 
 struct Publication_date {
     int month;
     int day;
     int year;
+    bool isFull(){
+        if ((month > 0) && (day > 0) && (year > 0))
+            return true;
+        else 
+            return false;
+    }
+    void clear(){
+        month = 0;
+        day = 0;
+        year = 0;
+    }
 };
 
-bool parse(string line, struct Book book) {
-    string substring;
-    int dataCount = 0;
-    for (int i = 0; i < line.size(); i++){
-        if (line.at(i) == ' '){
-            //do something with the line
-            dataCount++;
-        } else {
-            substring += line.at(i);
-        }
-    }
-}
-
 void printStruct(struct Book book){
-    
+    cout << book.Title << endl;
 }
 
 int main(){
@@ -75,9 +93,9 @@ int main(){
     do {
         infile.get(c);
         if (c == '\n'){
-            if (count == 4){
+            if (temp.isFull()){
                 //line has been created
-                cout << " " << endl;
+                printStruct(temp);
                 count = 0;
                 line = "";
                 continue;
