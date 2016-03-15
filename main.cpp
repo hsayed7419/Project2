@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <math.h>
 
 using namespace std;
 
@@ -25,6 +26,8 @@ int charToInt(char c){
         return 8;
         case '9':
         return 9;
+        case '.':
+        return -2;
         default:
         return -1;
     }
@@ -35,6 +38,31 @@ int stringToInt(string data) {
     for (int i = 0; i < data.size(); i++) {
         total += charToInt(data.at(i)) * pow(10, data.size() - i - 1);
     }
+    return total;
+}
+
+float stringToFloat(string data){
+    float total = 0;
+    char c;
+    int sub;
+    string subString;
+    int power = 0;  //x to the power of [power]
+    for (int i = data.size() - 1; i >= 0; i--) {
+        if (data.at(i) == '.'){
+            break;
+        }
+        power++;
+    }
+    int i;
+    for (i = data.size() - 1; i >= 0; i--){
+        c = data.at(i);
+        if ((sub = charToInt(c)) == -2){
+            break;
+        } 
+        total += sub * pow(10, power * (-1));
+    }
+    total += stringToInt(data.substr(0, i - 1));
+    return total;
 }
 
 struct Author {
@@ -72,6 +100,7 @@ struct Publication_date {
         day = 0;
         year = 0;
     }
+    // rip the integers from the string data
     void convertPubDate(string data){
         string temp;
         char c;
@@ -128,6 +157,7 @@ struct Book {
             break;
         }
     }
+    //tests if all values have been filled
     bool isFull(){
         if (pub.isFull() && auth.isFull() 
             && (Title.size() > 0) && cost >= 0 && Type >= 0){
