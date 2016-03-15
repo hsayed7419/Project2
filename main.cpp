@@ -3,6 +3,40 @@
 
 using namespace std;
 
+int charToInt(char c){
+    switch (c) {
+        case '0':
+        return 0;
+        case '1':
+        return 1;
+        case '2':
+        return 2;
+        case '3':
+        return 3;
+        case '4':
+        return 4;
+        case '5':
+        return 5;
+        case '6':
+        return 6;
+        case '7':
+        return 7;
+        case '8':
+        return 8;
+        case '9':
+        return 9;
+        default:
+        return -1;
+    }
+}
+
+int stringToInt(string data) {
+    int total = 0;
+    for (int i = 0; i < data.size(); i++) {
+        total += charToInt(data.at(i)) * pow(10, data.size() - i - 1);
+    }
+}
+
 struct Author {
     string First_name;
     string Middle_name;
@@ -50,10 +84,10 @@ struct Publication_date {
                     month = stringToInt(temp);
                     break;
                     case 1:
-                    
+                    day = stringToInt(temp);
                     break;
                     case 2:
-                    
+                    year = stringToInt(temp);
                     break;
                     default:
                     cout << "Error in Publication_date format" << endl;
@@ -90,7 +124,7 @@ struct Book {
             convertCost(data);
             break;
             case 4:
-            convertType(data);
+            Type = stringToInt(data);
             break;
         }
     }
@@ -118,10 +152,13 @@ int main(){
     string line, info;
     ifstream infile;
     Book temp;
+    char c;
+    int count
     // opens file to be read
     infile.open("record.dat");
-    char c;
-    int count = 0;
+    temp.clear();
+    
+    count = 0;
     do {
         infile.get(c);
         if (c == '\n'){
