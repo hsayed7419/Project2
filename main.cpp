@@ -176,7 +176,7 @@ struct Book {
             Title = data;
             break;
             case 3:
-            convertCost(data);
+            cost = stringToFloat(data);
             break;
             case 4:
             Type = stringToInt(data);
@@ -219,11 +219,13 @@ int main(){
         if (c == '\n'){
             if (temp.isFull()){
                 //struct has been created
-                printStruct(temp);
+                
                 count = 0;
                 line = "";
+                temp.clear();
                 continue;
             }
+            printStruct(temp);
             temp.storeToStruct(line, count);
             line = "";
             count++;
