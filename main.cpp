@@ -3,6 +3,9 @@
 #include <math.h>
 #include <string>
 
+#define LIB_SIZE 10
+#define DEBUG true
+
 using namespace std;
 
 int stringToInt(string data) {
@@ -45,19 +48,17 @@ struct Author {
 				case 1:
 					Middle_name = temp;
 					break;
-				case 2:
-					Last_name = temp;
-					break;
 				default:
 					cout << "Error in Author name format" << endl;
 				}
-				if (count == 3) break;
 				count++;
+                temp.clear();
 			}
 			else {
 				temp += c;
 			}
 		}
+        Last_name = temp;
 	}
 };
 
@@ -154,37 +155,71 @@ struct Book {
 	}
 };
 
-void printStruct(Book book) {
-	cout << "Title: " << book.Title << endl;
+void writeStruct(Book book[]) {
+    ofstream out;
+    out.open("grouped_record.dat");
+    if (out.is_open() && DEBUG){
+        cout << "Write open was a success" << endl;
+    }
+    int numBooks = 0;
+    for (int i = 0; i < LIB_SIZE; i++) {
+        if (!book[i].isFull()) break;
+        else numBooks++;
+    }
+    
+    Book temp;
+    temp.clear();
+    for (int i = 0; i < numBooks; i++){
+        for (int j = 1; j < numBooks; j++) {
+            if (book[i - 1].Type < book[i].Type) {
+                continue;
+            } else {
+                temp = book [i - 1];
+                book[i - 1] = book[i];
+                book[i] = temp;
+            }
+        }
+    }
+    
+    for(int i = 0; i < numBooks; i ++) {
+        out << "Publication_date: " << book[i].pub.month << " " << book[i].pub.day << " " << book[i].pub.year << endl;
+        out << "Author: " << book[i].auth.First_name << " " << book[i].auth.Middle_name << " " 
+            << book[i].auth.Last_name << endl;
+        out << "Title: " << book[i].Title << endl;
+        out << "Cost: " << book[i].cost << endl;
+        out << "Type: " << book[i].Type << endl;
+    }
+    out.close();
 }
 
 int main() {
-	bool DEBUG = true;
 	string line, info;
 	ifstream infile;
 	// opens file to be read
 	infile.open("record.dat");
-	if (infile.is_open() && DEBUG == true) {
-		cout << "Open was a success" << endl;
-		Book temp;
-		temp.clear();
+	if (infile.is_open()) {
+        if (DEBUG == true) cout << "Open was a success" << endl;
+		Book temp[LIB_SIZE];
+        for (int i = 0; i < LIB_SIZE; i++) {
+            temp[i].clear();
+        }
 		int count;
+        int current = 0;
 		count = 0;
 		while (getline(infile, line)) {
-			cout << line << endl;
-			if (temp.isFull()) {
+            temp[current].storeToStruct(line, count);
+			if (temp[current].isFull()) {
 				//struct has been created
-				printStruct(temp);
 				count = 0;
 				line.clear();
-				temp.clear();
+                current++;
 				continue;
 			}
 
-			temp.storeToStruct(line, count);
 			line.clear();
 			count++;
 		}
+        writeStruct(temp);
 	}
 
 	infile.close();
