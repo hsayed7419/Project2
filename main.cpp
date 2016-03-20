@@ -155,12 +155,25 @@ struct Book {
 	}
 };
 
+void copyStruct(Book saveto, Book book){
+    saveto.pub.month = book.pub.month;
+    saveto.pub.day = book.pub.day;
+    saveto.pub.year = book.pub.year;
+    saveto.auth.First_name = book.auth.First_name;
+    saveto.auth.Middle_name = book.auth.Middle_name;
+    saveto.auth.Last_name = book.auth.Last_name;
+    saveto.Title = book.Title;
+    saveto.cost = book.cost;
+    saveto.Type = book.Type;
+}
+
 void writeStruct(Book book[]) {
     ofstream out;
     out.open("grouped_record.dat");
     if (out.is_open() && DEBUG){
         cout << "Write open was a success" << endl;
     }
+    
     int numBooks = 0;
     for (int i = 0; i < LIB_SIZE; i++) {
         if (!book[i].isFull()) break;
@@ -171,12 +184,12 @@ void writeStruct(Book book[]) {
     temp.clear();
     for (int i = 0; i < numBooks; i++){
         for (int j = 1; j < numBooks; j++) {
-            if (book[i - 1].Type < book[i].Type) {
+            if (book[j - 1].Type < book[j].Type) {
                 continue;
             } else {
-                temp = book [i - 1];
-                book[i - 1] = book[i];
-                book[i] = temp;
+                copyStruct(temp, book[j - 1]);
+                copyStruct(book[j - 1], book[j]);
+                copyStruct(book[j], temp);
             }
         }
     }
