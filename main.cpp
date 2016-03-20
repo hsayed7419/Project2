@@ -5,65 +5,14 @@
 
 using namespace std;
 
-int charToInt(char c) {
-	switch (c) {
-	case '0':
-		return 0;
-	case '1':
-		return 1;
-	case '2':
-		return 2;
-	case '3':
-		return 3;
-	case '4':
-		return 4;
-	case '5':
-		return 5;
-	case '6':
-		return 6;
-	case '7':
-		return 7;
-	case '8':
-		return 8;
-	case '9':
-		return 9;
-	case '.':
-		return -2;
-	default:
-		return -1;
-	}
-}
-
 int stringToInt(string data) {
-	int total = 0;
-	for (unsigned int i = 0; i < data.size(); i++) {
-		total += charToInt(data.at(i)) * (int) pow(10, data.size() - i - 1);
-	}
-	return total;
+	size_t *size = 0;
+	return stoi(data, size, 10);
 }
 
-double stringToFloat(string data) {
-	double total = 0;
-	char c;
-	int sub;
-	string subString;
-	int power = 0;  //x to the power of [power]
-	for (int i = data.size() - 1; i >= 0; i--) {
-		if (data.at(i) == '.') {
-			break;
-		}
-		power++;
-	}
-	int i;
-	for (i = data.size() - 1; i >= 0; i--) {
-		c = data.at(i);
-		if ((sub = charToInt(c)) == -2) {
-			break;
-		}
-		total += sub * pow(10, power * (-1));
-	}
-	total += stringToInt(data.substr(0, i - 1));
-	return total;
+float stringToFloat(string data) {
+	size_t *size = 0;
+	return stof(data, size);
 }
 
 struct Author {
@@ -71,23 +20,23 @@ struct Author {
 	string Middle_name;
 	string Last_name;
 	bool isFull() {
-		if ((First_name.size() > 0) && (Middle_name.size() > 0)
-			&& (Last_name.size() > 0))
+		if ((First_name.length() > 0) && (Middle_name.length() > 0)
+			&& (Last_name.length() > 0))
 			return true;
 		else
 			return false;
 	}
 	//reset the struct values
 	void clear() {
-		First_name = "";
-		Middle_name = "";
-		Last_name = "";
+		First_name.clear();
+		Middle_name.clear();
+		Last_name.clear();
 	}
 	void convertAuthor(string data) {
 		string temp;
 		char c;
 		int count = 0;
-		for (unsigned int i = 0; i < data.size(); i++) {
+		for (unsigned int i = 0; i < data.length(); i++) {
 			if ((c = data.at(i)) == ' ') {
 				switch (count) {
 				case 0:
@@ -117,23 +66,25 @@ struct Publication_date {
 	int day;
 	int year;
 	bool isFull() {
-		if ((month > 0) && (day > 0) && (year > 0))
+		if ((month >= 0) && (day >= 0) && (year >= 0))
 			return true;
-		else
+		else {
 			return false;
+		}
 	}
 	//reset the struct values
 	void clear() {
-		month = 0;
-		day = 0;
-		year = 0;
+		month = -1;
+		day = -1;
+		year = -1;
 	}
 	// rip the integers from the string data
 	void convertPubDate(string data) {
 		string temp;
 		char c;
 		int count = 0;
-		for (unsigned int i = 0; i < data.size(); i++) {
+		int yearAt = 0;
+		for (unsigned int i = 0; i < data.length(); i++) {
 			c = data.at(i);
 			if (c == ' ') {
 				switch (count) {
@@ -142,22 +93,20 @@ struct Publication_date {
 					break;
 				case 1:
 					day = stringToInt(temp);
-					break;
-				case 2:
-					year = stringToInt(temp);
+					yearAt = i;
 					break;
 				default:
 					cout << "Error in Publication_date format" << endl;
 					break;
 				}
-				temp = "";
-				count = 0;
+				temp.clear();
+				count++;
 			}
 			else {
 				temp += c;
-				count++;
 			}
 		}
+		year = stringToInt(data.substr(yearAt, data.length() - yearAt));
 	}
 };
 
@@ -184,58 +133,59 @@ struct Book {
 		case 4:
 			Type = stringToInt(data);
 			break;
+		default:
+			cout << "Error in Book structure" << endl;
 		}
 	}
 	//tests if all values have been filled
 	bool isFull() {
 		if (pub.isFull() && auth.isFull()
-			&& (Title.size() > 0) && cost >= 0 && Type >= 0) {
+			&& (Title.length() > 0) && cost >= 0.0 && Type >= 0) {
 			return true;
 		}
-		else return false;
 	}
 	//reset the struct values
 	void clear() {
-		Title = "";
-		cost = 0;
-		Type = 0;
+		Title.clear();
+		cost = -1;
+		Type = -1;
 		pub.clear();
 		auth.clear();
 	}
 };
 
 void printStruct(Book book) {
-	string output = "header";
-	cout << output << endl;
+	cout << "Title: " << book.Title << endl;
 }
 
 int main() {
+	bool DEBUG = true;
 	string line, info;
 	ifstream infile;
 	// opens file to be read
 	infile.open("record.dat");
-	Book temp;
-	char c;
-	temp.clear();
-	int count;
-	count = 0;
-	do {
-		infile.get(c);
-		if (c == '\n') {
+	if (infile.is_open() && DEBUG == true) {
+		cout << "Open was a success" << endl;
+		Book temp;
+		temp.clear();
+		int count;
+		count = 0;
+		while (getline(infile, line)) {
+			cout << line << endl;
 			if (temp.isFull()) {
 				//struct has been created
-
+				printStruct(temp);
 				count = 0;
-				line = "";
+				line.clear();
 				temp.clear();
 				continue;
 			}
+
 			temp.storeToStruct(line, count);
-			line = "";
+			line.clear();
 			count++;
-			continue;
 		}
-		line += c;
-	} while (c != EOF);
+	}
+
 	infile.close();
 }
