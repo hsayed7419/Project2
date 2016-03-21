@@ -8,20 +8,29 @@
 
 using namespace std;
 
+/* Used to simplify the stoi call
+ * Will not compile in MinGW v 1.7-1.9
+ */
 int stringToInt(string data) {
 	size_t *size = 0;
 	return stoi(data, size, 10);
 }
 
+/* Used to simplify the stof call
+ * Will not compile in MinGW v 1.7-1.9
+ */
 float stringToFloat(string data) {
 	size_t *size = 0;
 	return stof(data, size);
 }
 
+// Struct to stor the author struct inside
 struct Author {
 	string First_name;
 	string Middle_name;
 	string Last_name;
+    
+    // Inate function to determine if all of the values inside this struct have been set
 	bool isFull() {
 		if ((First_name.length() > 0) && (Middle_name.length() > 0)
 			&& (Last_name.length() > 0))
@@ -29,12 +38,15 @@ struct Author {
 		else
 			return false;
 	}
-	//reset the struct values
+    
+	// Reset the struct values
 	void clear() {
 		First_name.clear();
 		Middle_name.clear();
 		Last_name.clear();
 	}
+    
+    // Used to extract the authors first, middle, and last name
 	void convertAuthor(string data) {
 		string temp;
 		char c;
@@ -62,10 +74,13 @@ struct Author {
 	}
 };
 
+// Struct used to store the publication date in
 struct Publication_date {
 	int month;
 	int day;
 	int year;
+    
+    // Inate function used to test if each variable in the struct have been set
 	bool isFull() {
 		if ((month >= 0) && (day >= 0) && (year >= 0))
 			return true;
@@ -73,12 +88,14 @@ struct Publication_date {
 			return false;
 		}
 	}
+    
 	//reset the struct values
 	void clear() {
 		month = -1;
 		day = -1;
 		year = -1;
 	}
+    
 	// rip the integers from the string data
 	void convertPubDate(string data) {
 		string temp;
@@ -111,12 +128,15 @@ struct Publication_date {
 	}
 };
 
+// Struct to store all information of each book in
 struct Book {
 	Publication_date pub;
 	Author auth;
 	string Title;
 	float cost;
 	int Type;
+    
+    // Sorts each line and stores to the proper variable/struct
 	void storeToStruct(string data, int type) {
 		switch (type) {
 		case 0:
@@ -138,6 +158,7 @@ struct Book {
 			cout << "Error in Book structure" << endl;
 		}
 	}
+    
 	//tests if all values have been filled
 	bool isFull() {
 		if (pub.isFull() && auth.isFull()
@@ -145,6 +166,7 @@ struct Book {
 			return true;
 		}
 	}
+    
 	//reset the struct values
 	void clear() {
 		Title.clear();
@@ -155,6 +177,7 @@ struct Book {
 	}
 };
 
+// Copies each variable to the struct since struct = struct does not work
 void copyStruct(Book saveto, Book book){
     saveto.pub.month = book.pub.month;
     saveto.pub.day = book.pub.day;
@@ -167,6 +190,7 @@ void copyStruct(Book saveto, Book book){
     saveto.Type = book.Type;
 }
 
+// Ouputs the array of structures into a file "grouped_record.dat"
 void writeStruct(Book book[]) {
     ofstream out;
     out.open("grouped_record.dat");
