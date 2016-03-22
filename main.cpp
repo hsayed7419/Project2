@@ -4,7 +4,7 @@
 #include <string>
 
 #define LIB_SIZE 10
-#define DEBUG true
+#define DEBUG false
 
 using namespace std;
 
@@ -165,6 +165,7 @@ struct Book {
 			&& (Title.length() > 0) && cost >= 0.0 && Type >= 0) {
 			return true;
 		}
+        return false;
 	}
     
 	//reset the struct values
