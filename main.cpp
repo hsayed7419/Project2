@@ -258,7 +258,6 @@ int main() {
 			count++;
 		}
         writeStruct(temp);
+        infile.close();
 	}
-
-	infile.close();
 }
