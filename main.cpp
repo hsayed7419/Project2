@@ -2,26 +2,25 @@
 #include <fstream>
 #include <math.h>
 #include <string>
+#include <stdlib.h>
 
 #define LIB_SIZE 10
 #define DEBUG false
 
 using namespace std;
 
-/* Used to simplify the stoi call
- * Will not compile in MinGW v 1.7-1.9
+/* Used to simplify the atoi call
  */
 int stringToInt(string data) {
-	size_t *size = 0;
-	return stoi(data, size, 10);
+    const char *c = data.c_str();
+    return atoi(c);
 }
 
-/* Used to simplify the stof call
- * Will not compile in MinGW v 1.7-1.9
+/* Used to simplify the atof call
  */
 float stringToFloat(string data) {
-	size_t *size = 0;
-	return stof(data, size);
+   const char *c = data.c_str();
+   return atof(c);
 }
 
 // Struct to stor the author struct inside
@@ -179,16 +178,16 @@ struct Book {
 };
 
 // Copies each variable to the struct since struct = struct does not work
-void copyStruct(Book saveto, Book book){
-    saveto.pub.month = book.pub.month;
-    saveto.pub.day = book.pub.day;
-    saveto.pub.year = book.pub.year;
-    saveto.auth.First_name = book.auth.First_name;
-    saveto.auth.Middle_name = book.auth.Middle_name;
-    saveto.auth.Last_name = book.auth.Last_name;
-    saveto.Title = book.Title;
-    saveto.cost = book.cost;
-    saveto.Type = book.Type;
+void copyStruct(Book *saveto, Book book){
+    saveto->pub.month = book.pub.month;
+    saveto->pub.day = book.pub.day;
+    saveto->pub.year = book.pub.year;
+    saveto->auth.First_name = book.auth.First_name;
+    saveto->auth.Middle_name = book.auth.Middle_name;
+    saveto->auth.Last_name = book.auth.Last_name;
+    saveto->Title = book.Title;
+    saveto->cost = book.cost;
+    saveto->Type = book.Type;
 }
 
 // Ouputs the array of structures into a file "grouped_record.dat"
@@ -205,6 +204,9 @@ void writeStruct(Book book[]) {
         else numBooks++;
     }
     
+    if(DEBUG)
+        cout << "Num Books: " << numBooks << endl;
+    
     Book temp;
     temp.clear();
     for (int i = 0; i < numBooks; i++){
@@ -212,9 +214,11 @@ void writeStruct(Book book[]) {
             if (book[j - 1].Type < book[j].Type) {
                 continue;
             } else {
-                copyStruct(temp, book[j - 1]);
-                copyStruct(book[j - 1], book[j]);
-                copyStruct(book[j], temp);
+                copyStruct(&temp, book[j - 1]);
+                copyStruct(&book[j - 1], book[j]);
+                copyStruct(&book[j], temp);
+                if (DEBUG)
+                    cout << "A swap has occured " << book[j - 1].Type << book[j].Type << endl;
             }
         }
     }
